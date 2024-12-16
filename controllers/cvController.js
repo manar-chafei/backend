@@ -100,45 +100,48 @@ exports.updateCV = async (req, res) => {
 // Fonction pour gérer l'upload et l'extraction des compétences
 exports.uploadCV = async (req, res) => {
   const form = new formidable.IncomingForm();
-
-  // Désactive l'analyse automatique du corps pour permettre de traiter les fichiers
   form.parse(req, async (err, fields, files) => {
     if (err) {
       console.error("Error during file upload:", err);
-      return res.status(500).json({ error: "Error during file upload" });
+      return res
+        .status(500)
+        .json({ error: "Erreur lors du téléchargement du fichier" });
     }
 
-    const cvFile = files.pdf[0]; // Assurez-vous que le nom du champ est correct
+    const cvFile = files.pdf[0]; // Assurez-vous que le champ de fichier est correct
     if (!cvFile) {
-      return res.status(400).json({ error: "No CV file uploaded." });
+      return res.status(400).json({ error: "Aucun fichier CV téléchargé." });
     }
 
     try {
       const filePath = cvFile.filepath;
       const fileBuffer = fs.readFileSync(filePath);
 
-      // Utilisez pdf-parse pour extraire le texte du fichier PDF
+      // Utilisation de pdf-parse pour extraire le texte du fichier PDF
       const data = await pdfParse(fileBuffer);
       const text = data.text;
 
-      // Fonction pour extraire des compétences à partir du texte du CV
+      // Fonction pour extraire les compétences à partir du texte du CV
       const skills = extractSkills(text);
 
-      // Vous pouvez sauvegarder le CV et les compétences extraites dans votre base de données
+      // Sauvegarder le CV et les compétences extraites dans la base de données
       const cv = new CV({
         userId: req.user.id, // Utilisez l'ID de l'utilisateur connecté
+        name: fields.name || "Nom non spécifié",
+        email: fields.email || "Email non spécifié",
+        phone: fields.phone || "Numéro non spécifié",
         skills: skills,
-        experience: fields.experience,
-        education: fields.education,
+        experience: fields.experience || "Expérience non spécifiée",
+        education: fields.education || "Éducation non spécifiée",
       });
 
       await cv.save();
 
       // Renvoie les compétences extraites
-      res.status(201).json({ message: "CV uploaded successfully", skills });
+      res.status(201).json({ message: "CV téléchargé avec succès", skills });
     } catch (error) {
-      console.error("Error while processing the CV:", error);
-      res.status(500).json({ error: "Failed to process CV" });
+      console.error("Erreur lors du traitement du CV:", error);
+      res.status(500).json({ error: "Échec du traitement du CV" });
     }
   });
 };

@@ -14,7 +14,7 @@ const { authenticate, authn } = require("../middleware/auth");
 router.post("/addTest", authenticate, addTest);
 router.get("/getAllTests", authenticate, getAllTests);
 router.get("/getTestById/:id", authenticate, getTestById);
-router.patch("/updateTest/:id", authenticate, updateTest);
+router.put("/updateTest/:id", authenticate, updateTest);
 router.delete("/deleteTest/:id", authenticate, deleteTest);
 //router.get("/", TestController.getSkills);
 
