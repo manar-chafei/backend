@@ -3,6 +3,23 @@ const fs = require("fs");
 const pdfParse = require("pdf-parse");
 const CV = require("../models/Cv");
 
+exports.getlast = async (req, res) => {
+  try {
+    const userId = req.user.id; // ID de l'utilisateur authentifié
+
+    // Récupérer le dernier CV en fonction de la date de création
+    const lastCV = await CV.findOne({ userId }).sort({ createdAt: -1 });
+
+    if (!lastCV) {
+      return res.status(404).json({ msg: "No CV found for this user" });
+    }
+
+    res.json(lastCV);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
 // Ajouter un nouveau CV (si nécessaire)
 exports.addCV = async (req, res) => {
   try {

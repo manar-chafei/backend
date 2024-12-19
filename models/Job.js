@@ -7,8 +7,9 @@ const jobSchema = new mongoose.Schema({
   location: { type: String, required: true },
   salary: { type: Number, required: true },
   experienceRequired: { type: Number, required: true },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User ", required: true }, // Référence au modèle User
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Référence au modèle User
   createdAt: { type: Date, default: Date.now },
+  isAvailable: { type: Boolean, default: true }, // Nouveau champ pour l'état de disponibilité
 });
 
 const Job = mongoose.model("Job", jobSchema);

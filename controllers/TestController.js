@@ -8,6 +8,14 @@ const checkAdminRole = (req, res, next) => {
   }
   next();
 };
+const checkCandidateRole = (req, res, next) => {
+  if (req.user.role !== "candidate" && req.user.role !== "admin") {
+    return res
+      .status(403)
+      .json({ msg: "Accès refusé, vous n'avez pas les droits nécessaires" });
+  }
+  next();
+};
 
 // Créer un nouveau test
 exports.addTest = async (req, res) => {
@@ -20,8 +28,9 @@ exports.addTest = async (req, res) => {
 };
 
 // Récupérer tous les tests
+// Récupérer tous les tests
 exports.getAllTests = async (req, res) => {
-  checkAdminRole(req, res, async () => {
+  checkCandidateRole(req, res, async () => {
     try {
       const tests = await Test.find();
       res.status(200).json(tests);
